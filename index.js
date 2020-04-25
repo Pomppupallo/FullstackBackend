@@ -43,5 +43,11 @@ app.get('/info', (req, res) => {
     )
 })
 
-app.get("/", (req, res) => res.send("Hello World!"));
+app.delete("/api/persons/:id", (req, res) => {
+    const id = Number(req.params.id)
+    persons = persons.filter(person => person.id !== id)
+
+    res.status(204).end()
+})
+
 app.listen(port, () => console.log(`Example app listening on ${port} port!`));
