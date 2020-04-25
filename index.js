@@ -50,4 +50,19 @@ app.delete("/api/persons/:id", (req, res) => {
     res.status(204).end()
 })
 
+app.post("/api/persons/", (req, res) => {
+    const body = req.body;
+    const newId = Math.floor(Math.random() * 500);
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: newId
+    }
+
+    persons = persons.concat(person);
+
+    res.json(person);
+})
+
 app.listen(port, () => console.log(`Example app listening on ${port} port!`));
