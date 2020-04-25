@@ -15,6 +15,11 @@ let persons = [
     number: "041-321456",
     id: 2,
   },
+  {
+    name: "Teppo Virtanen",
+    number: "050-987456",
+    id: 3,
+  },
 ];
 
 app.get("/api/persons", (req, res) => res.json(persons));
