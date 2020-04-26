@@ -20,6 +20,7 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :object"
   )
 );
+app.use(express.static('build'));
 
 let persons = [
   {
