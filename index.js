@@ -1,8 +1,10 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 const port = 3001;
 
 app.use(express.json());
+app.use(morgan("tiny"));
 
 let persons = [
   {
@@ -25,63 +27,59 @@ let persons = [
 app.get("/api/persons", (req, res) => res.json(persons));
 
 app.get("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
 
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }
-})
+  if (person) {
+    res.json(person);
+  } else {
+    res.status(404).end();
+  }
+});
 
-app.get('/info', (req, res) => {
-    const date = new Date();
-    res.send(
-        `<p>Phonebook has info for ${persons.length} people</p>
+app.get("/info", (req, res) => {
+  const date = new Date();
+  res.send(
+    `<p>Phonebook has info for ${persons.length} people</p>
          <p> ${date} </p>`
-    )
-})
+  );
+});
 
 app.delete("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
+  const id = Number(req.params.id);
+  persons = persons.filter((person) => person.id !== id);
 
-    res.status(204).end()
-})
+  res.status(204).end();
+});
 
 app.post("/api/persons/", (req, res) => {
-    const body = req.body;
+  const body = req.body;
 
-    if (!body.name || !body.number) {
-      return(
-      res.status(400).json({
-        error: 'name or number is missing'
-      })
-      )
-    }
+  if (!body.name || !body.number) {
+    return res.status(400).json({
+      error: "name or number is missing",
+    });
+  }
 
-    const names = persons.map(person => person.name);
+  const names = persons.map((person) => person.name);
 
-    if (names.includes(body.name)) {
-      return(
-        res.status(400).json({
-          error: 'name must be unique'
-        })
-      )
-    }
+  if (names.includes(body.name)) {
+    return res.status(400).json({
+      error: "name must be unique",
+    });
+  }
 
-    const newId = Math.floor(Math.random() * 500);
+  const newId = Math.floor(Math.random() * 500);
 
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: newId
-    }
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: newId,
+  };
 
-    persons = persons.concat(person);
+  persons = persons.concat(person);
 
-    res.json(person);
-})
+  res.json(person);
+});
 
 app.listen(port, () => console.log(`Example app listening on ${port} port!`));
