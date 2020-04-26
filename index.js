@@ -1,18 +1,22 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
 const port = 3001;
 
 morgan.token("object", function (req, res) {
   const body = req.body;
+  console.log(body);
   const object = {
     name: body.name,
     number: body.number,
+    id: body.id,
   };
   return JSON.stringify(object);
 });
 
 app.use(express.json());
+app.use(cors());
 app.use(
   morgan(
     ":method :url :status :res[content-length] - :response-time ms :object"
