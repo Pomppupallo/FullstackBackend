@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && d:/Fullstack2020/FullstackSubmissions/part2/puhelinluettelo && npm run build --prod && cp -r build d:/FullstackBackend/part3/puhelinluetteloBackend/",
+    "build:ui": "rd /s -rf build && d:/Fullstack2020/FullstackSubmissions/part2/puhelinluettelo && npm run build --prod && cp -r build d:/FullstackBackend/part3/puhelinluetteloBackend/",
     "deploy": "git push heroku master",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
     "logs:prod": "heroku logs --tail"
@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.10",
     "morgan": "^1.10.0"
