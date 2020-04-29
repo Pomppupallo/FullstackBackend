@@ -5,6 +5,16 @@ const cors = require("cors");
 const Person = require("./models/person")
 const app = express();
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
 morgan.token("object", function (req, res) {
   const body = req.body;
   const object = {
@@ -15,6 +25,7 @@ morgan.token("object", function (req, res) {
   return JSON.stringify(object);
 });
 
+app.use(express.static('build'));
 app.use(express.json());
 app.use(cors());
 app.use(
@@ -22,7 +33,6 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :object"
   )
 );
-app.use(express.static('build'));
 
 app.get("/api/persons", (req, res) => {
   Person.find({})
@@ -35,15 +45,16 @@ app.get("/api/persons", (req, res) => {
   })
 })
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id)
     .then(person => {
-    res.status(204).json(person.toJSON())
+      if (person) {
+        res.json(person.toJSON())
+      } else {
+        res.status(404).end()
+      }
   })
-  .catch(error => {
-    console.log(error)
-    res.status(404).end()
-  })
+  .catch(error => next(error))
 });
 
 app.get("/info", (req, res) => {
@@ -55,20 +66,17 @@ app.get("/info", (req, res) => {
   }) 
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-  .then(response => {
-    console.log(response)
-    res.json(response);
+  .then(person => {
+    res.json(person.toJSON());
   })
-  .catch(error => {
-    console.log(error)
-    res.status(404).end()
-  })
+  .catch(error => next(error))
 });
 
 app.post("/api/persons/", (req, res) => {
   const body = req.body;
+  console.log(body)
 
   const person = new Person({
     name: body.name,
@@ -79,9 +87,26 @@ app.post("/api/persons/", (req, res) => {
     console.log(
       `added ${response.name} number ${response.number} to phonebook`
     );
-    res.json(response);
+    res.json(response.toJSON());
   });
 })
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedNote => {
+      response.json(updatedNote.toJSON())
+    })
+    .catch(error => next(error))
+})
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => console.log(`Example app listening on ${PORT} port!`));
